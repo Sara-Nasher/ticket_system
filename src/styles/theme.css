@@ -1,0 +1,100 @@
+/* ── Theme tokens ── */
+:root, [data-theme="dark"] {
+  --av-bg:      #03091c;
+  --av-bg2:     #070e24;
+  --av-bg3:     #0a1330;
+  --av-bg4:     #04091e;
+  --av-text:    #e8eeff;
+  --av-text2:   #93a8c4;
+  --av-text3:   #546885;
+  --av-text4:   #2d3f5a;
+  --av-border:  rgba(255,255,255,0.07);
+  --av-border2: rgba(255,255,255,0.04);
+  --av-surface: rgba(7,14,36,0.70);
+  --av-surface2:rgba(7,14,36,0.85);
+  --av-surface3:rgba(7,14,36,0.95);
+  --av-header:  rgba(3,9,28,0.90);
+  --av-nav:     rgba(3,9,28,0.97);
+  --av-modal:   #070e24;
+  --av-drawer:  #04091e;
+  --av-dropdown:#0a1330;
+  --av-thead:   rgba(7,14,36,0.92);
+  --av-shadow:  rgba(0,0,0,0.35);
+  --av-shadow2: rgba(59,130,246,0.07);
+  --av-orb1:    rgba(37,99,235,0.22);
+  --av-orb2:    rgba(20,184,166,0.16);
+  --av-orb3:    rgba(217,119,6,0.12);
+  --av-grid:    rgba(59,130,246,0.04);
+  --av-dots:    rgba(59,130,246,0.22);
+  --av-chip-bg: rgba(59,130,246,0.10);
+  --av-chip-bd: rgba(59,130,246,0.25);
+  --av-badge-dark: rgba(217,119,6,0.08);
+  --av-badge-dark-bd: rgba(217,119,6,0.20);
+  --av-input:   rgba(255,255,255,0.03);
+  --av-hover-row: rgba(59,130,246,0.05);
+  --av-logo-text: #e8eeff;
+  --av-nav-link:  #546885;
+  --av-nav-link-h:#93c5fd;
+  --av-stat-hover-bg: rgba(7,14,36,0.92);
+  --av-panel-border: rgba(59,130,246,0.15);
+  --av-panel-border-h: rgba(59,130,246,0.38);
+  --av-card-border: rgba(255,255,255,0.06);
+  --av-card-border-h: rgba(59,130,246,0.28);
+  --av-feat-border: rgba(255,255,255,0.06);
+  --av-scan: rgba(59,130,246,0.6);
+  --av-font-display: 'Clash Display', 'Satoshi', sans-serif;
+  --av-font-body: 'Satoshi', 'General Sans', 'Inter', sans-serif;
+  --av-font-mono: 'JetBrains Mono', monospace;
+  --av-font-numbers: 'Cabinet Grotesk', 'Satoshi', sans-serif;
+}
+
+[data-theme="light"] {
+  --av-bg:      #eef2ff;
+  --av-bg2:     #ffffff;
+  --av-bg3:     #f5f7ff;
+  --av-bg4:     #f8faff;
+  --av-text:    #1a2744;
+  --av-text2:   #3d5a80;
+  --av-text3:   #607a9a;
+  --av-text4:   #94a3b8;
+  --av-border:  rgba(59,130,246,0.12);
+  --av-border2: rgba(59,130,246,0.06);
+  --av-surface: rgba(255,255,255,0.80);
+  --av-surface2:rgba(255,255,255,0.92);
+  --av-surface3:rgba(255,255,255,0.98);
+  --av-header:  rgba(255,255,255,0.92);
+  --av-nav:     rgba(255,255,255,0.97);
+  --av-modal:   #ffffff;
+  --av-drawer:  #f8faff;
+  --av-dropdown:#ffffff;
+  --av-thead:   rgba(238,242,255,0.95);
+  --av-shadow:  rgba(59,130,246,0.10);
+  --av-shadow2: rgba(59,130,246,0.05);
+  --av-orb1:    rgba(59,130,246,0.12);
+  --av-orb2:    rgba(20,184,166,0.10);
+  --av-orb3:    rgba(217,119,6,0.08);
+  --av-grid:    rgba(59,130,246,0.06);
+  --av-dots:    rgba(59,130,246,0.18);
+  --av-chip-bg: rgba(59,130,246,0.08);
+  --av-chip-bd: rgba(59,130,246,0.22);
+  --av-badge-dark: rgba(217,119,6,0.07);
+  --av-badge-dark-bd: rgba(217,119,6,0.18);
+  --av-input:   rgba(59,130,246,0.03);
+  --av-hover-row: rgba(59,130,246,0.04);
+  --av-logo-text: #1a2744;
+  --av-nav-link:  #607a9a;
+  --av-nav-link-h:#1d4ed8;
+  --av-stat-hover-bg: rgba(255,255,255,0.98);
+  --av-panel-border: rgba(59,130,246,0.18);
+  --av-panel-border-h: rgba(59,130,246,0.45);
+  --av-card-border: rgba(59,130,246,0.10);
+  --av-card-border-h: rgba(59,130,246,0.35);
+  --av-feat-border: rgba(59,130,246,0.10);
+  --av-scan: rgba(59,130,246,0.5);
+}
+
+[dir="rtl"] {
+  --av-font-display: 'Yekan Bakh', 'Vazir', 'Shabnam', sans-serif;
+  --av-font-body: 'Vazir', 'Shabnam', 'Sahel', sans-serif;
+  --av-font-numbers: 'Vazir', 'Shabnam', 'Cabinet Grotesk', sans-serif;
+}

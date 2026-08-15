@@ -1,0 +1,394 @@
+/* ============================================
+   TYPOGRAPHY - Luxury & Premium
+   ============================================ */
+
+:root {
+  --font-family-english-body: 'Manrope', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-family-english-display: 'Playfair Display', 'Cormorant Garamond', serif;
+  --font-family-english-heading: 'Cinzel', 'Playfair Display', serif;
+  --font-family-english-numbers: 'Fraunces', 'Cinzel', serif;
+
+  --font-family-persian-body: 'Vazirmatn', 'Estedad', 'Parastoo', sans-serif;
+  --font-family-persian-display: 'Iran Nastaliq', 'Yekan Bakh', 'Vazirmatn', sans-serif;
+  --font-family-persian-heading: 'Yekan Bakh', 'Vazirmatn', 'Estedad', sans-serif;
+  --font-family-persian-numbers: 'Vazirmatn', 'Fraunces', 'Cinzel', sans-serif;
+
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+  --font-size-en-display: 64px;
+  --font-size-en-h1: 44px;
+  --font-size-en-h2: 32px;
+  --font-size-en-h3: 24px;
+  --font-size-en-h4: 19px;
+  --font-size-en-h5: 16px;
+  --font-size-en-body: 15px;
+  --font-size-en-body-lg: 17px;
+  --font-size-en-body-sm: 14px;
+  --font-size-en-caption: 13px;
+  --font-size-en-label: 12px;
+  --font-size-en-small: 11px;
+
+  --font-size-fa-display: 56px;
+  --font-size-fa-h1: 40px;
+  --font-size-fa-h2: 30px;
+  --font-size-fa-h3: 22px;
+  --font-size-fa-h4: 18px;
+  --font-size-fa-h5: 15px;
+  --font-size-fa-body: 15px;
+  --font-size-fa-body-lg: 17px;
+  --font-size-fa-body-sm: 14px;
+  --font-size-fa-caption: 13px;
+  --font-size-fa-label: 12px;
+  --font-size-fa-small: 11px;
+
+  --font-weight-extra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+  --font-weight-black: 900;
+
+  --line-height-display: 1.02;
+  --line-height-heading: 1.1;
+  --line-height-body: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.7;
+  --line-height-caption: 1.4;
+
+  --letter-spacing-display: -0.05em;
+  --letter-spacing-heading: -0.04em;
+  --letter-spacing-body: -0.02em;
+  --letter-spacing-caption: 0.01em;
+  --letter-spacing-label: 0.03em;
+  --letter-spacing-wide: 0.05em;
+}
+
+
+[lang="en"],
+:root:not([lang="fa"]) {
+  --font-family-body: var(--font-family-english-body);
+  --font-family-display: var(--font-family-english-display);
+  --font-family-heading: var(--font-family-english-heading);
+  --font-family-numbers: var(--font-family-english-numbers);
+
+  --font-size-display: var(--font-size-en-display);
+  --font-size-h1: var(--font-size-en-h1);
+  --font-size-h2: var(--font-size-en-h2);
+  --font-size-h3: var(--font-size-en-h3);
+  --font-size-h4: var(--font-size-en-h4);
+  --font-size-h5: var(--font-size-en-h5);
+  --font-size-body: var(--font-size-en-body);
+  --font-size-body-lg: var(--font-size-en-body-lg);
+  --font-size-body-sm: var(--font-size-en-body-sm);
+  --font-size-caption: var(--font-size-en-caption);
+  --font-size-label: var(--font-size-en-label);
+  --font-size-small: var(--font-size-en-small);
+
+  --line-height-heading: var(--line-height-heading);
+  --line-height-body: var(--line-height-body);
+
+  --letter-spacing-heading: var(--letter-spacing-heading);
+  --letter-spacing-body: var(--letter-spacing-body);
+
+  --font-weight-body: var(--font-weight-regular);
+  --font-weight-heading: var(--font-weight-bold);
+  --font-weight-display: var(--font-weight-extra-bold);
+}
+
+
+[lang="fa"] {
+  --font-family-body: var(--font-family-persian-body);
+  --font-family-display: var(--font-family-persian-display);
+  --font-family-heading: var(--font-family-persian-heading);
+  --font-family-numbers: var(--font-family-persian-numbers);
+
+  --font-size-display: var(--font-size-fa-display);
+  --font-size-h1: var(--font-size-fa-h1);
+  --font-size-h2: var(--font-size-fa-h2);
+  --font-size-h3: var(--font-size-fa-h3);
+  --font-size-h4: var(--font-size-fa-h4);
+  --font-size-h5: var(--font-size-fa-h5);
+  --font-size-body: var(--font-size-fa-body);
+  --font-size-body-lg: var(--font-size-fa-body-lg);
+  --font-size-body-sm: var(--font-size-fa-body-sm);
+  --font-size-caption: var(--font-size-fa-caption);
+  --font-size-label: var(--font-size-fa-label);
+  --font-size-small: var(--font-size-fa-small);
+
+  --line-height-heading: 1.35;
+  --line-height-body: 1.8;
+
+  --letter-spacing-heading: 0;
+  --letter-spacing-body: 0;
+
+  --font-weight-body: var(--font-weight-regular);
+  --font-weight-heading: var(--font-weight-bold);
+  --font-weight-display: var(--font-weight-extra-bold);
+}
+
+html {
+  font-size: 16px;
+  font-family: var(--font-family-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  color: var(--av-text);
+}
+
+h1, .h1 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+  margin: 0 0 0.3em 0;
+  color: var(--av-text);
+}
+
+h2, .h2 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+  margin: 0 0 0.3em 0;
+  color: var(--av-text);
+}
+
+h3, .h3 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+  margin: 0 0 0.3em 0;
+  color: var(--av-text);
+}
+
+h4, .h4 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+  margin: 0 0 0.3em 0;
+  color: var(--av-text);
+}
+
+.display-1 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+  color: var(--av-text);
+  font-style: italic;
+}
+
+.display-2 {
+  font-family: var(--font-family-display);
+  font-size: calc(var(--font-size-display) * 0.7);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+  color: var(--av-text);
+  font-style: italic;
+}
+
+p, .body {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  margin: 0 0 1.2em 0;
+  color: var(--av-text2);
+}
+
+.body-lg {
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-relaxed);
+}
+
+.body-sm {
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body);
+}
+
+.caption {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
+  text-transform: uppercase;
+  color: var(--av-text3);
+}
+
+.label {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--av-text3);
+}
+
+.stat-number {
+  font-family: var(--font-family-numbers);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-extra-bold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-display);
+  color: var(--av-text);
+  font-variant-numeric: oldstyle-nums;
+  font-feature-settings: "onum";
+}
+
+.stat-label {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--av-text3);
+}
+
+code, pre, .mono {
+  font-family: var(--font-family-mono);
+  font-size: 0.85em;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--av-text2);
+  background: var(--av-border2);
+  padding: 0.1em 0.5em;
+  border-radius: 4px;
+}
+
+blockquote {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-relaxed);
+  letter-spacing: var(--letter-spacing-body);
+  color: var(--av-text);
+  border-inline-start: 4px solid var(--av-panel-border);
+  padding-inline-start: 1.5em;
+  margin: 1.5em 0;
+  font-style: italic;
+}
+
+.ant-btn, .ant-btn span {
+  font-family: var(--font-family-display) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  letter-spacing: var(--letter-spacing-body) !important;
+}
+
+.ant-input, .ant-input-affix-wrapper, .ant-select-selector, .ant-picker {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-body) !important;
+}
+
+.ant-menu-item, .ant-menu-submenu-title {
+  font-family: var(--font-family-body) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+.ant-table {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-body-sm) !important;
+}
+
+.ant-tabs-tab {
+  font-family: var(--font-family-heading) !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+.ant-modal-title {
+  font-family: var(--font-family-heading) !important;
+  font-weight: var(--font-weight-bold) !important;
+  letter-spacing: var(--letter-spacing-heading) !important;
+}
+
+.ant-statistic-title {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-size-label) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  letter-spacing: var(--letter-spacing-label) !important;
+  text-transform: uppercase !important;
+}
+
+.ant-statistic-content {
+  font-family: var(--font-family-numbers) !important;
+  font-size: var(--font-size-h2) !important;
+  font-weight: var(--font-weight-bold) !important;
+  letter-spacing: var(--letter-spacing-display) !important;
+  font-feature-settings: "onum";
+}
+
+[dir="rtl"] {
+  font-feature-settings: "ss02";
+}
+
+[dir="rtl"] .ant-btn,
+[dir="rtl"] .ant-btn span {
+  letter-spacing: 0 !important;
+}
+
+[dir="rtl"] .ant-modal-title {
+  letter-spacing: 0 !important;
+}
+
+[dir="rtl"] .ant-statistic-content {
+  letter-spacing: 0 !important;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1200px) {
+  :root {
+    --font-size-en-display: 52px;
+    --font-size-en-h1: 36px;
+    --font-size-en-h2: 28px;
+    --font-size-fa-display: 48px;
+    --font-size-fa-h1: 34px;
+    --font-size-fa-h2: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-en-display: 40px;
+    --font-size-en-h1: 28px;
+    --font-size-en-h2: 22px;
+    --font-size-en-h3: 18px;
+    --font-size-fa-display: 36px;
+    --font-size-fa-h1: 26px;
+    --font-size-fa-h2: 20px;
+    --font-size-fa-h3: 17px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-size-en-display: 32px;
+    --font-size-en-h1: 22px;
+    --font-size-en-h2: 18px;
+    --font-size-fa-display: 28px;
+    --font-size-fa-h1: 20px;
+    --font-size-fa-h2: 17px;
+  }
+}
