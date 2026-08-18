@@ -1,3 +1,4 @@
+// src/app/pages/AdminDash.tsx
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Skeleton, App } from 'antd';
 import {
@@ -151,10 +152,6 @@ const AdminDash: React.FC = () => {
           sub={i.overviewSub}
           extra={
             <div style={{ display: "flex", gap: 8 }}>
-              <GBtn sz="sm">
-                <DownloadOutlined />
-                {i.exportCsv}
-              </GBtn>
               <Btn sz="sm" icon={<ReloadOutlined />}>
                 {i.refresh}
               </Btn>

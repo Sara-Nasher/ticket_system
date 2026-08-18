@@ -1,3 +1,4 @@
+// server.js
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -36,15 +37,58 @@ app.use((req, res, next) => {
   }
 });
 
-// ==================== USERS ====================
+function normalizeText(text) {
+  if (!text) return '';
+  return text
+    .normalize('NFKC')
+    .replace(/[ًٌٍَُِّ]/g, '')
+    .trim();
+}
 
-// GET /users
 app.get('/users', (req, res) => {
   const db = readDB();
-  res.json(db.users || []);
+  let users = db.users || [];
+  
+  const search = req.query.search;
+  if (search) {
+    const searchNormalized = normalizeText(search).toLowerCase();
+    users = users.filter(u => {
+      const name = normalizeText(u.name || '').toLowerCase();
+      const nameFa = normalizeText(u.nameFa || '').toLowerCase();
+      const email = normalizeText(u.email || '').toLowerCase();
+      const idStr = String(u.id);
+      return name.includes(searchNormalized) || 
+             nameFa.includes(searchNormalized) || 
+             email.includes(searchNormalized) || 
+             idStr.includes(search);
+    });
+  }
+  
+  const role = req.query.role;
+  if (role) {
+    users = users.filter(u => u.role === role);
+  }
+  
+  const status = req.query.status;
+  if (status) {
+    users = users.filter(u => u.status === status);
+  }
+  
+  const page = parseInt(req.query._page) || 1;
+  const limit = parseInt(req.query._limit) || 10;
+  const start = (page - 1) * limit;
+  const end = start + limit;
+  
+  const total = users.length;
+  const paginatedUsers = users.slice(start, end);
+  
+  const usersWithoutPassword = paginatedUsers.map(({ password, ...user }) => user);
+  
+  res.setHeader('X-Total-Count', total);
+  res.setHeader('X-Total-Pages', Math.ceil(total / limit));
+  res.json(usersWithoutPassword);
 });
 
-// GET /users/:id
 app.get('/users/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -56,7 +100,6 @@ app.get('/users/:id', (req, res) => {
   }
 });
 
-// POST /users
 app.post('/users', (req, res) => {
   const db = readDB();
   const users = db.users || [];
@@ -71,7 +114,6 @@ app.post('/users', (req, res) => {
   res.status(201).json(newUser);
 });
 
-// PUT /users/:id
 app.put('/users/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -91,7 +133,6 @@ app.put('/users/:id', (req, res) => {
   }
 });
 
-// PATCH /users/:id
 app.patch('/users/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -111,7 +152,6 @@ app.patch('/users/:id', (req, res) => {
   }
 });
 
-// DELETE /users/:id
 app.delete('/users/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -120,17 +160,57 @@ app.delete('/users/:id', (req, res) => {
   res.status(204).send();
 });
 
-// ==================== TICKETS ====================
-
-// GET /tickets
 app.get('/tickets', (req, res) => {
   const db = readDB();
-  const tickets = db.tickets || [];
+  let tickets = db.tickets || [];
   tickets.sort((a, b) => a.id - b.id);
-  res.json(tickets);
+  
+  const search = req.query.search;
+  if (search) {
+    const searchNormalized = normalizeText(search).toLowerCase();
+    tickets = tickets.filter(t => {
+      const subject = normalizeText(t.subject || '').toLowerCase();
+      const subjectFa = normalizeText(t.subjectFa || '').toLowerCase();
+      const idStr = String(t.id);
+      return subject.includes(searchNormalized) || 
+             subjectFa.includes(searchNormalized) || 
+             idStr.includes(search);
+    });
+  }
+  
+  const status = req.query.status;
+  if (status) {
+    tickets = tickets.filter(t => t.status === status);
+  }
+  
+  const priority = req.query.priority;
+  if (priority) {
+    tickets = tickets.filter(t => t.priority === priority);
+  }
+  
+  const userId = req.query.userId;
+  if (userId) {
+    tickets = tickets.filter(t => t.userId === Number(userId));
+  }
+  
+  const category = req.query.category;
+  if (category) {
+    tickets = tickets.filter(t => t.category === category);
+  }
+  
+  const page = parseInt(req.query._page) || 1;
+  const limit = parseInt(req.query._limit) || 10;
+  const start = (page - 1) * limit;
+  const end = start + limit;
+  
+  const total = tickets.length;
+  const paginatedTickets = tickets.slice(start, end);
+  
+  res.setHeader('X-Total-Count', total);
+  res.setHeader('X-Total-Pages', Math.ceil(total / limit));
+  res.json(paginatedTickets);
 });
 
-// GET /tickets/:id
 app.get('/tickets/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -142,7 +222,6 @@ app.get('/tickets/:id', (req, res) => {
   }
 });
 
-// POST /tickets
 app.post('/tickets', (req, res) => {
   const db = readDB();
   const tickets = db.tickets || [];
@@ -188,7 +267,6 @@ app.post('/tickets', (req, res) => {
   res.status(201).json(newTicket);
 });
 
-// PUT /tickets/:id
 app.put('/tickets/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -212,7 +290,6 @@ app.put('/tickets/:id', (req, res) => {
   }
 });
 
-// DELETE /tickets/:id
 app.delete('/tickets/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -221,9 +298,6 @@ app.delete('/tickets/:id', (req, res) => {
   res.status(204).send();
 });
 
-// ==================== ACTIVITIES ====================
-
-// GET /activities
 app.get('/activities', (req, res) => {
   const db = readDB();
   const activities = db.activities || [];
@@ -231,7 +305,6 @@ app.get('/activities', (req, res) => {
   res.json(activities);
 });
 
-// GET /activities/:id
 app.get('/activities/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -243,7 +316,6 @@ app.get('/activities/:id', (req, res) => {
   }
 });
 
-// POST /activities
 app.post('/activities', (req, res) => {
   const db = readDB();
   const activities = db.activities || [];
@@ -269,7 +341,6 @@ app.post('/activities', (req, res) => {
   res.status(201).json(newActivity);
 });
 
-// PUT /activities/:id
 app.put('/activities/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -283,7 +354,6 @@ app.put('/activities/:id', (req, res) => {
   }
 });
 
-// DELETE /activities/:id
 app.delete('/activities/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -292,15 +362,11 @@ app.delete('/activities/:id', (req, res) => {
   res.status(204).send();
 });
 
-// ==================== CATEGORIES ====================
-
-// GET /categories
 app.get('/categories', (req, res) => {
   const db = readDB();
   res.json(db.categories || []);
 });
 
-// GET /categories/:id
 app.get('/categories/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -312,7 +378,6 @@ app.get('/categories/:id', (req, res) => {
   }
 });
 
-// POST /categories
 app.post('/categories', (req, res) => {
   const db = readDB();
   const categories = db.categories || [];
@@ -339,7 +404,6 @@ app.post('/categories', (req, res) => {
   res.status(201).json(newCategory);
 });
 
-// PUT /categories/:id
 app.put('/categories/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -353,7 +417,6 @@ app.put('/categories/:id', (req, res) => {
   }
 });
 
-// DELETE /categories/:id
 app.delete('/categories/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -362,9 +425,6 @@ app.delete('/categories/:id', (req, res) => {
   res.status(204).send();
 });
 
-// ==================== NOTIFICATIONS ====================
-
-// GET /notifications
 app.get('/notifications', (req, res) => {
   const db = readDB();
   const notifications = db.notifications || [];
@@ -372,7 +432,6 @@ app.get('/notifications', (req, res) => {
   res.json(notifications);
 });
 
-// GET /notifications/:id
 app.get('/notifications/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -384,7 +443,6 @@ app.get('/notifications/:id', (req, res) => {
   }
 });
 
-// POST /notifications
 app.post('/notifications', (req, res) => {
   const db = readDB();
   const notifications = db.notifications || [];
@@ -413,7 +471,6 @@ app.post('/notifications', (req, res) => {
   res.status(201).json(newNotification);
 });
 
-// PATCH /notifications/:id
 app.patch('/notifications/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -428,7 +485,6 @@ app.patch('/notifications/:id', (req, res) => {
   }
 });
 
-// DELETE /notifications/:id
 app.delete('/notifications/:id', (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -437,7 +493,6 @@ app.delete('/notifications/:id', (req, res) => {
   res.status(204).send();
 });
 
-// DELETE /notifications/user/:userId
 app.delete('/notifications/user/:userId', (req, res) => {
   const db = readDB();
   const userId = parseInt(req.params.userId);
@@ -446,9 +501,6 @@ app.delete('/notifications/user/:userId', (req, res) => {
   res.status(204).send();
 });
 
-// ==================== LOGIN ====================
-
-// POST /login
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const db = readDB();
@@ -467,8 +519,6 @@ app.post('/login', (req, res) => {
   
   res.json({ user: userWithoutPassword, token });
 });
-
-// ==================== START SERVER ====================
 
 const PORT = 5001;
 app.listen(PORT, () => {

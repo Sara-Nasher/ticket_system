@@ -1,3 +1,4 @@
+// src/services/auth.ts
 import api from './api';
 import type { AuthUser } from '../app/types';
 
@@ -40,54 +41,19 @@ export const authService = {
   login: async (email: string, password: string): Promise<{ user: AuthUser; token: string }> => {
     try {
       console.log('🔐 [auth.login] Attempting login with:', email);
-      console.log('🔐 [auth.login] Password length:', password?.length);
-
-      const response = await api.get<AuthUser[]>('/users');
-      const users = response.data;
       
-      console.log('📥 [auth.login] Total users:', users.length);
-
-      if (users.length > 0) {
-        console.log('📥 [auth.login] First user:', {
-          id: users[0].id,
-          email: users[0].email,
-          hasPassword: !!users[0].password,
-          passwordLength: users[0].password?.length,
-        });
-      }
-
-      let foundUser = null;
-      for (const u of users) {
-        const emailMatch = u.email?.toLowerCase() === email?.toLowerCase();
-        const passwordMatch = u.password === password;
-        
-        if (emailMatch && passwordMatch) {
-          foundUser = u;
-          console.log('✅ User found!', u.email);
-          break;
-        }
-      }
+      // ✅ استفاده از مسیر /login که رمز عبور را بررسی می‌کند
+      const response = await api.post('/login', { email, password });
+      const { user, token } = response.data;
       
-      if (!foundUser) {
-        console.error('❌ [auth.login] User not found for email:', email);
-        throw new Error('ایمیل یا رمز عبور اشتباه است');
-      }
-
-      const updatedUser = {
-        ...foundUser,
-        lastLogin: new Date().toISOString().split('T')[0],
-      };
+      console.log('✅ [auth.login] Login successful for:', user.email);
       
-      await api.put(`/users/${foundUser.id}`, updatedUser);
-
-      const { password: _, ...userWithoutPassword } = updatedUser;
-      const token = `mock-token-${foundUser.id}-${Date.now()}`;
-      
-      console.log('✅ [auth.login] Login successful for:', foundUser.email);
-      
-      return { user: userWithoutPassword as AuthUser, token };
+      return { user, token };
     } catch (error: any) {
       console.error('❌ [auth.login] Error:', error);
+      if (error.response?.status === 401) {
+        throw new Error('ایمیل یا رمز عبور اشتباه است');
+      }
       throw new Error(error.message || 'خطا در ورود به سیستم');
     }
   },

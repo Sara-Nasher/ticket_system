@@ -1,7 +1,7 @@
 import React from 'react';
 import { ConfigProvider, theme as antTheme } from 'antd';
 import { useApp } from './context/AppContext';
-import GlobalSearch from './components/GlobalSearch';
+
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -126,7 +126,6 @@ const AppContent: React.FC = () => {
         token: resolvedTheme === "dark" ? antTokensDark : antTokensLight,
       }}
     >
-      <GlobalSearch />
       {renderPage()}
     </ConfigProvider>
   );

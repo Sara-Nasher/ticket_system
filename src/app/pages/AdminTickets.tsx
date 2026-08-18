@@ -1,3 +1,4 @@
+// src/app/pages/AdminTickets.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table,
@@ -14,7 +15,7 @@ import {
   EyeOutlined,
   CloseCircleOutlined,
   ReloadOutlined,
-  DownloadOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { useApp } from '../context/AppContext';
 import { AdminLayout, Panel, PgHeader, StTag, PrTag } from '../components/Layouts';
@@ -34,47 +35,60 @@ const AdminTickets: React.FC = () => {
   const [stF, setStF] = useState<string | null>(null);
   const [priF, setPriF] = useState<string | null>(null);
 
-
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      let allTickets = await ticketService.getAllTickets();
-      
-      allTickets = allTickets.filter(t => {
-        return typeof t.id === 'number' || !isNaN(Number(t.id));
+      const result = await ticketService.getTicketsPaginated({
+        page: pg,
+        pageSize: pgSz,
+        search: search || undefined,
+        status: stF || undefined,
+        priority: priF || undefined,
       });
       
-      if (search) {
-        const searchLower = search.toLowerCase();
-        allTickets = allTickets.filter(t => 
-          t.subject.toLowerCase().includes(searchLower) || 
-          String(t.id).includes(searchLower)
-        );
-      }
-      
-      if (stF) {
-        allTickets = allTickets.filter(t => t.status === stF);
-      }
-      
-      if (priF) {
-        allTickets = allTickets.filter(t => t.priority === priF);
-      }
-      
-      const start = (pg - 1) * pgSz;
-      const end = start + pgSz;
-      
-      setTotal(allTickets.length);
-      setData(allTickets.slice(start, end));
+      setTotal(result.total);
+      setData(result.data);
     } catch (error) {
-      console.error('Error fetching admin tickets:', error);
+      console.error('Search error:', error);
     } finally {
       setLoading(false);
     }
-  }, [pg, pgSz, search, stF, priF]);
+  }, [search, stF, priF, pg, pgSz]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [pg, pgSz]);
+
+  const doSearch = () => {
+    setPg(1);
+    fetchData();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      doSearch();
+    }
+  };
+
+  const handleStatusChange = (value: string | null) => {
+    setStF(value);
+    setPg(1);
+    fetchData();
+  };
+
+  const handlePriorityChange = (value: string | null) => {
+    setPriF(value);
+    setPg(1);
+    fetchData();
+  };
+
+  const handleReset = () => {
+    setSearch("");
+    setStF(null);
+    setPriF(null);
+    setPg(1);
+    fetchData();
+  };
 
   const cols: TableColumnsType<TicketRec> = [
     {
@@ -197,39 +211,31 @@ const AdminTickets: React.FC = () => {
           data.filter(t => t.status === "open").length, 
           isRTL
         )} ${i.open}`}
-        extra={
-          <Button
-            icon={<DownloadOutlined />}
-            style={{
-              background: "var(--av-border2)",
-              border: "1px solid var(--av-border)",
-              color: "var(--av-text2)",
-            }}
-          >
-            {i.exportCsv}
-          </Button>
-        }
+        extra={null}
       />
       <Panel>
         <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-          <Input.Search
-            placeholder={`${i.search}…`}
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setPg(1);
-            }}
-            onSearch={fetchData}
-            style={{ width: 220 }}
-          />
+          <div style={{ display: "flex", gap: 0, alignItems: "center" }}>
+            <Input
+              placeholder={`${i.search}…`}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyPress={handleKeyPress}
+              style={{ width: 200, borderRadius: '8px 0 0 8px' }}
+              size="middle"
+            />
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={doSearch}
+              style={{ borderRadius: '0 8px 8px 0', height: 32 }}
+            />
+          </div>
           <Select
             placeholder={i.status}
             allowClear
             value={stF}
-            onChange={v => {
-              setStF(v);
-              setPg(1);
-            }}
+            onChange={handleStatusChange}
             style={{ width: 148 }}
             options={["open", "in_progress", "resolved", "closed"].map(s => ({
               value: s,
@@ -240,10 +246,7 @@ const AdminTickets: React.FC = () => {
             placeholder={i.priority}
             allowClear
             value={priF}
-            onChange={v => {
-              setPriF(v);
-              setPg(1);
-            }}
+            onChange={handlePriorityChange}
             style={{ width: 138 }}
             options={["low", "medium", "high", "urgent"].map(p => ({
               value: p,
@@ -252,13 +255,7 @@ const AdminTickets: React.FC = () => {
           />
           <Button
             icon={<ReloadOutlined />}
-            onClick={() => {
-              setSearch("");
-              setStF(null);
-              setPriF(null);
-              setPg(1);
-              fetchData();
-            }}
+            onClick={handleReset}
             style={{
               background: "var(--av-border2)",
               border: "1px solid var(--av-border)",

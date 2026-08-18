@@ -1,3 +1,4 @@
+// src/app/pages/UserMgmt.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table,
@@ -23,7 +24,7 @@ import {
   DeleteOutlined,
   PlusOutlined,
   ReloadOutlined,
-  DownloadOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { useApp } from '../context/AppContext';
 import { AdminLayout, Panel, PgHeader, Btn, lbSt, inSt } from '../components/Layouts';
@@ -33,7 +34,7 @@ import { fDate, fNum } from '../utils/helpers';
 import type { AuthUser, UserStatus } from '../types';
 
 const UserMgmt: React.FC = () => {
-  const { message } = App.useApp();
+  const { message: msg } = App.useApp();
   const { i, isRTL, calMode, auth } = useApp();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<AuthUser[]>([]);
@@ -42,6 +43,55 @@ const UserMgmt: React.FC = () => {
   const [pgSz, setPgSz] = useState(8);
   const [search, setSearch] = useState("");
   const [roleF, setRoleF] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await userService.getUsersPaginated({
+        page: pg,
+        pageSize: pgSz,
+        search: search || undefined,
+        role: roleF || undefined,
+      });
+      
+      setTotal(result.total);
+      setData(result.data);
+    } catch (error) {
+      console.error('Search error:', error);
+      msg.error('Error fetching users');
+    } finally {
+      setLoading(false);
+    }
+  }, [search, roleF, pg, pgSz]);
+
+  useEffect(() => {
+    fetchData();
+  }, [pg, pgSz]);
+
+  const doSearch = () => {
+    setPg(1);
+    fetchData();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      doSearch();
+    }
+  };
+
+  const handleRoleFilterChange = (value: string | null) => {
+    setRoleF(value);
+    setPg(1);
+    fetchData();
+  };
+
+  const handleReset = () => {
+    setSearch("");
+    setRoleF(null);
+    setPg(1);
+    fetchData();
+  };
+
   const [editRec, setEditRec] = useState<AuthUser | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [viewRec, setViewRec] = useState<AuthUser | null>(null);
@@ -49,44 +99,48 @@ const UserMgmt: React.FC = () => {
   const [addForm] = Form.useForm();
   const ff = "var(--av-font-display)";
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      let allUsers = await userService.getAllUsers();
-      
-      if (search) {
-        const searchLower = search.toLowerCase();
-        allUsers = allUsers.filter(u => 
-          u.name.toLowerCase().includes(searchLower) || 
-          u.email.toLowerCase().includes(searchLower)
-        );
-      }
-      
-      if (roleF) {
-        allUsers = allUsers.filter(u => u.role === roleF);
-      }
-      
-      const start = (pg - 1) * pgSz;
-      const end = start + pgSz;
-      
-      setTotal(allUsers.length);
-      setData(allUsers.slice(start, end));
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      message.error('خطا در دریافت لیست کاربران');
-    } finally {
-      setLoading(false);
-    }
-  }, [pg, pgSz, search, roleF]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   const stCls: Record<UserStatus, string> = {
     active: "av-st-active",
     inactive: "av-st-inactive",
     banned: "av-st-banned",
+  };
+
+  const handleRoleChange = async (userId: number, newRole: string) => {
+    if (newRole !== 'admin' && newRole !== 'user') {
+      msg.error(isRTL ? 'Invalid role' : 'Invalid role');
+      return;
+    }
+    try {
+      await userService.changeUserRole(userId, newRole as 'admin' | 'user');
+      await activityService.createActivity({
+        userId: Number(auth?.id),
+        userName: auth?.name || 'System',
+        action: 'Change Role',
+        actionFa: 'Change Role',
+        details: `User role changed`,
+      });
+      msg.success(isRTL ? 'User role changed successfully' : 'User role changed successfully');
+      fetchData();
+    } catch (error: any) {
+      msg.error(error.message || (isRTL ? 'Error changing role' : 'Error changing role'));
+    }
+  };
+
+  const handleStatusChange = async (userId: number, status: string) => {
+    try {
+      await userService.changeUserStatus(userId, status);
+      await activityService.createActivity({
+        userId: Number(auth?.id),
+        userName: auth?.name || 'System',
+        action: 'Change Status',
+        actionFa: 'Change Status',
+        details: `User status changed`,
+      });
+      msg.success(isRTL ? 'User status changed successfully' : 'User status changed successfully');
+      fetchData();
+    } catch (error: any) {
+      msg.error(error.message || (isRTL ? 'Error changing status' : 'Error changing status'));
+    }
   };
 
   const handleEditUser = async (values: any) => {
@@ -96,14 +150,14 @@ const UserMgmt: React.FC = () => {
         userId: Number(auth?.id),
         userName: auth?.name || 'System',
         action: 'Update User',
-        actionFa: 'به‌روزرسانی کاربر',
-        details: `اطلاعات کاربر ${editRec?.name} به‌روزرسانی شد`,
+        actionFa: 'Update User',
+        details: `User ${editRec?.name} updated`,
       });
-      message.success(i.userSaved);
+      msg.success(i.userSaved);
       setEditRec(null);
       fetchData();
     } catch (error: any) {
-      message.error(error.message || 'خطا در به‌روزرسانی کاربر');
+      msg.error(error.message || 'Error updating user');
     }
   };
 
@@ -122,15 +176,15 @@ const UserMgmt: React.FC = () => {
         userId: Number(auth?.id),
         userName: auth?.name || 'System',
         action: 'Add User',
-        actionFa: 'افزودن کاربر',
-        details: `کاربر جدید ${values.name} اضافه شد`,
+        actionFa: 'Add User',
+        details: `New user ${values.name} added`,
       });
-      message.success(i.userAdded);
+      msg.success(i.userAdded);
       setAddOpen(false);
       addForm.resetFields();
       fetchData();
     } catch (error: any) {
-      message.error(error.message || 'خطا در افزودن کاربر');
+      msg.error(error.message || 'Error adding user');
     }
   };
 
@@ -141,13 +195,13 @@ const UserMgmt: React.FC = () => {
         userId: Number(auth?.id),
         userName: auth?.name || 'System',
         action: 'Delete User',
-        actionFa: 'حذف کاربر',
-        details: `کاربر ${name} حذف شد`,
+        actionFa: 'Delete User',
+        details: `User ${name} deleted`,
       });
-      message.success(i.userDeleted);
+      msg.success(i.userDeleted);
       fetchData();
     } catch (error: any) {
-      message.error(error.message || 'خطا در حذف کاربر');
+      msg.error(error.message || 'Error deleting user');
     }
   };
 
@@ -283,24 +337,27 @@ const UserMgmt: React.FC = () => {
       />
       <Panel>
         <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-          <Input.Search
-            placeholder={`${i.search}…`}
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setPg(1);
-            }}
-            onSearch={fetchData}
-            style={{ width: 240 }}
-          />
+          <div style={{ display: "flex", gap: 0, alignItems: "center" }}>
+            <Input
+              placeholder={`${i.search}…`}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyPress={handleKeyPress}
+              style={{ width: 200, borderRadius: '8px 0 0 8px' }}
+              size="middle"
+            />
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={doSearch}
+              style={{ borderRadius: '0 8px 8px 0', height: 32 }}
+            />
+          </div>
           <Select
             placeholder={i.role}
             allowClear
             value={roleF}
-            onChange={v => {
-              setRoleF(v);
-              setPg(1);
-            }}
+            onChange={handleRoleFilterChange}
             style={{ width: 138 }}
             options={[
               { value: "user", label: i.user },
@@ -309,30 +366,13 @@ const UserMgmt: React.FC = () => {
           />
           <Button
             icon={<ReloadOutlined />}
-            onClick={() => {
-              setSearch("");
-              setRoleF(null);
-              setPg(1);
-              fetchData();
-            }}
+            onClick={handleReset}
             style={{
               background: "var(--av-border2)",
               border: "1px solid var(--av-border)",
               color: "var(--av-text2)",
             }}
           />
-          <div style={{ marginLeft: "auto" }}>
-            <Button
-              icon={<DownloadOutlined />}
-              style={{
-                background: "var(--av-border2)",
-                border: "1px solid var(--av-border)",
-                color: "var(--av-text2)",
-              }}
-            >
-              {i.exportCsv}
-            </Button>
-          </div>
         </div>
         <Table
           columns={cols}
@@ -363,7 +403,6 @@ const UserMgmt: React.FC = () => {
         </div>
       </Panel>
 
-      {/* Edit Modal */}
       <Modal
         title={<span style={{ color: "var(--av-text)", fontFamily: ff }}>{editRec ? i.editUser : i.addUser}</span>}
         open={!!editRec || addOpen}
@@ -407,11 +446,16 @@ const UserMgmt: React.FC = () => {
             </Col>
             <Col span={12}>
               <Form.Item label={<span style={lbSt}>{i.dept}</span>} name="dept">
-                <Select options={["Engineering", "Design", "HR", "Finance", "Sales", "IT", "Product", "Marketing", "Legal", "Operations"].map(d => ({ value: d, label: d }))} />
+                <Select
+                  options={[
+                    "Engineering", "Design", "HR", "Finance", "Sales", "IT",
+                    "Product", "Marketing", "Legal", "Operations"
+                  ].map(d => ({ value: d, label: d }))}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label={<span style={lbSt}>{i.role}</span>} name="role">
+              <Form.Item label={<span style={lbSt}>{i.role}</span>} name="role" initialValue="user">
                 <Select
                   options={[
                     { value: "user", label: i.user },
@@ -436,7 +480,6 @@ const UserMgmt: React.FC = () => {
         </Form>
       </Modal>
 
-      {/* View Drawer */}
       <Drawer
         title={<span style={{ color: "var(--av-text)", fontFamily: ff }}>{i.viewUser}</span>}
         open={!!viewRec}

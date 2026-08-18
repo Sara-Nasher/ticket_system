@@ -1,13 +1,65 @@
+// src/services/user.ts
 import api from './api';
 import type { AuthUser } from '../app/types';
 
 export const userService = {
+  getUsersPaginated: async (params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    role?: string;
+    status?: string;
+  }): Promise<{ data: AuthUser[]; total: number; page: number; pageSize: number; totalPages: number }> => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.page) queryParams.append('_page', String(params.page));
+      if (params.pageSize) queryParams.append('_limit', String(params.pageSize));
+      if (params.search) queryParams.append('search', params.search);
+      if (params.role) queryParams.append('role', params.role);
+      if (params.status) queryParams.append('status', params.status);
+      
+      const response = await api.get<AuthUser[]>(`/users?${queryParams.toString()}`);
+      const total = parseInt(response.headers['x-total-count'] || '0');
+      const totalPages = parseInt(response.headers['x-total-pages'] || '0');
+      
+      return {
+        data: response.data,
+        total: total,
+        page: params.page || 1,
+        pageSize: params.pageSize || 10,
+        totalPages: totalPages,
+      };
+    } catch (error: any) {
+      console.error('getUsersPaginated Error:', error);
+      throw new Error(error.message || 'خطا در دریافت کاربران');
+    }
+  },
+
   getAllUsers: async (): Promise<AuthUser[]> => {
     try {
       const response = await api.get<AuthUser[]>('/users');
       return response.data.map(({ password, ...user }) => user as AuthUser);
     } catch (error: any) {
       throw new Error(error.message || 'خطا در دریافت کاربران');
+    }
+  },
+
+  searchUsers: async (params: {
+    search?: string;
+    role?: string;
+    status?: string;
+  }): Promise<AuthUser[]> => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.search) queryParams.append('search', params.search);
+      if (params.role) queryParams.append('role', params.role);
+      if (params.status) queryParams.append('status', params.status);
+      
+      const response = await api.get<AuthUser[]>(`/users?${queryParams.toString()}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('searchUsers Error:', error);
+      throw new Error(error.message || 'خطا در جستجوی کاربران');
     }
   },
 

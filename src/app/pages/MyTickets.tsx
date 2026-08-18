@@ -1,3 +1,4 @@
+// src/app/pages/MyTickets.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Input, Select, Button, Pagination, Empty, Tooltip } from 'antd';
 import type { TableColumnsType } from 'antd';
@@ -5,6 +6,7 @@ import {
   EyeOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { useApp } from '../context/AppContext';
 import { UserLayout, Panel, PgHeader, Btn, StTag, PrTag } from '../components/Layouts';
@@ -23,52 +25,54 @@ const MyTickets: React.FC = () => {
   const [stF, setStF] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!auth) return;
     setLoading(true);
     try {
-      const allTickets = await ticketService.getAllTickets();
-      console.log('📥 All tickets from API:', allTickets);
-      
-      const userId = Number(auth?.id);
-      let filtered = allTickets.filter(t => {
-        const tUserId = typeof t.userId === 'number' ? t.userId : Number(t.userId);
-        return tUserId === userId;
+      const userId = Number(auth.id);
+      const result = await ticketService.getTicketsPaginated({
+        page: pg,
+        pageSize: pgSz,
+        search: search || undefined,
+        status: stF || undefined,
+        userId: userId,
       });
       
-      if (search) {
-        const searchLower = search.toLowerCase();
-        filtered = filtered.filter(t => 
-          t.subject.toLowerCase().includes(searchLower) || 
-          String(t.id).includes(searchLower)
-        );
-      }
-      
-      if (stF) {
-        filtered = filtered.filter(t => t.status === stF);
-      }
-      
-      filtered.sort((a, b) => {
-        const dateA = new Date(a.created || a.updated || '1970-01-01').getTime();
-        const dateB = new Date(b.created || b.updated || '1970-01-01').getTime();
-        return dateB - dateA;
-      });
-      
-      const start = (pg - 1) * pgSz;
-      const end = start + pgSz;
-      
-      setTotal(filtered.length);
-      setData(filtered.slice(start, end));
-      
-      console.log(`📊 Showing ${filtered.slice(start, end).length} of ${filtered.length} tickets`);
+      setTotal(result.total);
+      setData(result.data);
     } catch (error) {
-      console.error('❌ Error fetching tickets:', error);
+      console.error('Search error:', error);
     } finally {
       setLoading(false);
     }
-  }, [pg, pgSz, search, stF, auth]);
+  }, [search, stF, pg, pgSz, auth]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [pg, pgSz]);
+
+  const doSearch = () => {
+    setPg(1);
+    fetchData();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      doSearch();
+    }
+  };
+
+  const handleStatusChange = (value: string | null) => {
+    setStF(value);
+    setPg(1);
+    fetchData();
+  };
+
+  const handleReset = () => {
+    setSearch("");
+    setStF(null);
+    setPg(1);
+    fetchData();
+  };
 
   const cols: TableColumnsType<TicketRec> = [
     {
@@ -157,24 +161,27 @@ const MyTickets: React.FC = () => {
       />
       <Panel>
         <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-          <Input.Search
-            placeholder={`${i.search || 'Search'}…`}
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setPg(1);
-            }}
-            onSearch={fetchData}
-            style={{ width: 220 }}
-          />
+          <div style={{ display: "flex", gap: 0, alignItems: "center" }}>
+            <Input
+              placeholder={`${i.search || 'Search'}…`}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyPress={handleKeyPress}
+              style={{ width: 200, borderRadius: '8px 0 0 8px' }}
+              size="middle"
+            />
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={doSearch}
+              style={{ borderRadius: '0 8px 8px 0', height: 32 }}
+            />
+          </div>
           <Select
             placeholder={i.status || 'Status'}
             allowClear
             value={stF}
-            onChange={v => {
-              setStF(v);
-              setPg(1);
-            }}
+            onChange={handleStatusChange}
             style={{ width: 148 }}
             options={["open", "in_progress", "resolved", "closed"].map(s => ({
               value: s,
@@ -183,7 +190,7 @@ const MyTickets: React.FC = () => {
           />
           <Button
             icon={<ReloadOutlined />}
-            onClick={fetchData}
+            onClick={handleReset}
             style={{
               background: "var(--av-border2)",
               border: "1px solid var(--av-border)",

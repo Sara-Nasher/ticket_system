@@ -970,26 +970,6 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           />
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button
-              onClick={() => setSearchOpen(true)}
-              title="Search (Ctrl+K)"
-              style={{
-                background: "var(--av-surface)",
-                border: "1px solid var(--av-border)",
-                color: "var(--av-text3)",
-                borderRadius: 7,
-                padding: "4px 12px",
-                cursor: "pointer",
-                fontSize: 11,
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-              }}
-            >
-              <SearchOutlined />
-              <span style={{ color: "var(--av-text4)", fontSize: 10 }}>⌘K</span>
-            </button>
-            <button
               onClick={() => setCalMode(calMode === "gregorian" ? "jalali" : "gregorian")}
               title={i.calendarType}
               style={{
@@ -1267,26 +1247,6 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button
-              onClick={() => setSearchOpen(true)}
-              title="Search (Ctrl+K)"
-              style={{
-                background: "var(--av-surface)",
-                border: "1px solid var(--av-border)",
-                color: "var(--av-text3)",
-                borderRadius: 7,
-                padding: "4px 12px",
-                cursor: "pointer",
-                fontSize: 11,
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-              }}
-            >
-              <SearchOutlined />
-              <span style={{ color: "var(--av-text4)", fontSize: 10 }}>⌘K</span>
-            </button>
             <button
               onClick={() => setCalMode(calMode === "gregorian" ? "jalali" : "gregorian")}
               title={i.calendarType}

@@ -1,3 +1,4 @@
+// src/app/pages/Reports.tsx
 import React from 'react';
 import { Row, Col, Tabs, Button, DatePicker, Progress, Table } from 'antd';
 import {
@@ -169,18 +170,7 @@ const Reports: React.FC = () => {
       label: i.rawData,
       children: (
         <Panel>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
-            <Button
-              icon={<DownloadOutlined />}
-              style={{
-                background: "var(--av-border2)",
-                border: "1px solid var(--av-border)",
-                color: "var(--av-text2)",
-              }}
-            >
-              {i.exportCsv}
-            </Button>
-          </div>
+          {/* ❌ بخش CSV حذف شد */}
           <Table
             dataSource={TICKETS}
             rowKey="id"
@@ -252,21 +242,7 @@ const Reports: React.FC = () => {
         crumbs={[{ label: i.adminDash, page: "admin-dash" }, { label: i.reports }]}
         title={i.reports}
         sub={isRTL ? "بینش‌ها برای تصمیم‌گیری آگاهانه" : "Insights and analytics for informed decisions"}
-        extra={
-          <div style={{ display: "flex", gap: 8 }}>
-            <DatePicker.RangePicker />
-            <Button
-              icon={<DownloadOutlined />}
-              style={{
-                background: "var(--av-border2)",
-                border: "1px solid var(--av-border)",
-                color: "var(--av-text2)",
-              }}
-            >
-              {i.exportCsv}
-            </Button>
-          </div>
-        }
+        extra={null}
       />
       <Tabs items={tabs} />
     </AdminLayout>
